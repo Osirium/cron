@@ -281,9 +281,9 @@ func (c *Cron) run() {
 				now = now.In(c.location)
 				c.logger.Info("wake", "now", now)
 
-				var entries []*Entry
-				index := 0
-				for _, entry := range c.entries {
+				for index := 0; index < len(c.entries); index++ {
+					entry := c.entries[index]
+
 					// Run every entry whose next time was less than now
 					if entry.Next.After(now) || entry.Next.IsZero() {
 						break
@@ -292,18 +292,11 @@ func (c *Cron) run() {
 					entry.Prev = entry.Next
 					entry.Next = entry.Schedule.Next(now)
 					c.logger.Info("run", "now", now, "entry", entry.ID, "next", entry.Next)
-					// only run once
-					if !entry.Schedule.isOneOff() {
-						// If the entry isn't a one off we need to keep a log off it in the entries slice
-						entries = append(entries, entry)
+					if entry.Schedule.isOneOff() {
+						c.entries = append(c.entries[:index], c.entries[index+1:]...)
+						index--
 					}
-					index++
 				}
-				// The above for loop will stop as soon as a entry's Next value is later than the current time OR is the zero value for a time variable
-				// If any have been skipped we need to ensure they are added back to the entries slice
-				entries = append(entries, c.entries[index:]...)
-				c.entries = entries
-
 			case newEntry := <-c.add:
 				timer.Stop()
 				now = c.now()

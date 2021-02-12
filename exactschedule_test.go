@@ -24,12 +24,17 @@ func TestExactScheduleRunsOnce(t *testing.T) {
 	cron := newWithSeconds()
 	cron.AddFunc("* * * * * *", func() {})
 	cron.ScheduleAtExactTime(time.Now().Add(1*time.Second), func() {})
+	cron.ScheduleAtExactTime(time.Now().Add(2*time.Second), func() {})
 
-	if len(cron.Entries()) != 2 {
-		t.Error("Expected cron entries to include 2 entries before starting cron")
+	if len(cron.Entries()) != 3 {
+		t.Error("Expected cron entries to include 3 entries before starting cron")
 	}
 	cron.Start()
 	defer cron.Stop()
+	<-time.After(OneSecond)
+	if len(cron.Entries()) != 2 {
+		t.Error("Expected cron entries to include 2 entry after running cron")
+	}
 	<-time.After(OneSecond)
 	if len(cron.Entries()) != 1 {
 		t.Error("Expected cron entries to include 1 entry after running cron")
