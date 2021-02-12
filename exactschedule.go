@@ -7,8 +7,7 @@ type ExactSchedule struct {
 	Schedule time.Time
 }
 
-// Next returns the next time this should be run.
-// This rounds so that the next activation time will be on the second.
+// Next returns the exact time that the job will run.
 func (schedule ExactSchedule) Next(t time.Time) time.Time {
 	return schedule.Schedule
 }

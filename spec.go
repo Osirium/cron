@@ -54,7 +54,7 @@ const (
 )
 
 // isOneOff returns a true or false if this schedule should only be ran once.
-// For ConstantDelaySchedule this will ALWAYS return false
+// For SpecSchedule this will ALWAYS return false
 func (s *SpecSchedule) isOneOff() bool {
 	return false
 }
