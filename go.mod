@@ -1,3 +1,3 @@
-module github.com/NeilGerring/cron/v3
+module github.com/Osirium/cron/v4
 
 go 1.12
